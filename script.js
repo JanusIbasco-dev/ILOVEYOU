@@ -9,7 +9,7 @@ const bgMusic = document.getElementById("bgMusic");
 const heartContainer = document.getElementById("heartContainer");
 const sparkleContainer = document.getElementById("sparkleContainer");
 
-const loveDate = new Date("2024-02-14T00:00:00");
+const loveDate = new Date("2021-08-02T00:00:00");
 const romanticMessage = `My love,
 
 Every day with you feels like a soft sunrise after a long night.
