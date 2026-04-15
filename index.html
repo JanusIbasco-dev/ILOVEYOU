@@ -11,6 +11,7 @@
     href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Pacifico&family=Poppins:wght@300;400;500;600;700&display=swap"
     rel="stylesheet"
   />
+  <link rel="icon" type="image/png" href="heart.png" />
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
@@ -19,23 +20,28 @@
   <div id="sparkleContainer" aria-hidden="true"></div>
 
   <button id="musicToggle" class="music-toggle" aria-label="Toggle background music" title="Toggle background music">
-    🎵 Music: Off
+    🎵
   </button>
 
   <main>
     <section class="hero section card-glass" id="home">
       <p class="tag">for the prettiest soul i know ✨</p>
-      <h1 class="hero-title">Hi Love 💖</h1>
+      <h1 class="hero-title heartbeat">Hi Love 💖</h1>
       <p class="hero-subtitle">I made this just for you...</p>
-      <button id="revealBtn" class="btn btn-primary">Click me ❤️</button>
+      <button id="revealBtn" class="btn btn-primary">Click me 💖</button>
+      <p class="floating-love-note">I love you more than words can explain 💖</p>
     </section>
+
+    <div class="cute-divider" aria-hidden="true">💗 ✨ 💗</div>
 
     <section id="loveMessage" class="section hidden card-glass">
       <h2 class="section-title">A little note from my heart 💌</h2>
       <p id="typedMessage" class="typed-message" aria-live="polite"></p>
     </section>
 
-    <section class="section" id="reasons">
+    <div class="cute-divider" aria-hidden="true">💗 ✨ 💗</div>
+
+    <section class="section card-glass" id="reasons">
       <h2 class="section-title">Reasons Why I Love You 🌸</h2>
       <div class="reasons-grid">
         <article class="reason-card">Your smile makes my day brighter ☀️</article>
@@ -49,16 +55,20 @@
       </div>
     </section>
 
+    <div class="cute-divider" aria-hidden="true">💗 ✨ 💗</div>
+
 
     <section class="section card-glass" id="counter">
       <h2 class="section-title">Days since I fell in love with you 🗓️💖</h2>
-      <p class="counter-value"><span id="daysCount">0</span> days of loving you</p>
+      <p class="counter-value"><span id="daysCount" class="heartbeat-soft">0</span> days of loving you</p>
       <p class="counter-note">And I would choose you in every lifetime.</p>
     </section>
 
+    <div class="cute-divider" aria-hidden="true">💗 ✨ 💗</div>
+
     <section class="section card-glass" id="surpriseSection">
       <h2 class="section-title">Tiny Dangerous Corner 😳</h2>
-      <button id="surpriseBtn" class="btn btn-secondary">Don't click this 😳</button>
+      <button id="surpriseBtn" class="btn btn-secondary">Open this 🥺</button>
       <p id="surpriseMessage" class="surprise-message hidden">I love you more than anything in this world 💖</p>
     </section>
   </main>

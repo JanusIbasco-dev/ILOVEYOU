@@ -25,6 +25,7 @@ Forever yours. 💖`;
 
 let typingStarted = false;
 let isMusicPlaying = false;
+let sectionObserver = null;
 
 function updateLoveCounter() {
   const now = new Date();
@@ -49,6 +50,12 @@ function typeWriter(text, element, speed = 30) {
 
 function revealLoveMessage() {
   loveMessageSection.classList.remove("hidden");
+  loveMessageSection.classList.add("in-view");
+
+  if (sectionObserver) {
+    sectionObserver.observe(loveMessageSection);
+  }
+
   if (!typingStarted) {
     typingStarted = true;
     typeWriter(romanticMessage, typedMessage, 26);
@@ -63,10 +70,17 @@ function revealLoveMessage() {
 function toggleSurprise() {
   surpriseMessage.classList.toggle("hidden");
   if (surpriseMessage.classList.contains("hidden")) {
-    surpriseBtn.textContent = "Don't click this 😳";
+    surpriseBtn.textContent = "Open this 🥺";
   } else {
-    surpriseBtn.textContent = "You clicked it 😍";
+    surpriseBtn.textContent = "You opened it 😍";
   }
+}
+
+function syncMusicButtonUI() {
+  musicToggle.classList.toggle("playing", isMusicPlaying);
+  musicToggle.textContent = isMusicPlaying ? "🎶" : "🎵";
+  musicToggle.title = isMusicPlaying ? "Pause music" : "Play music";
+  musicToggle.setAttribute("aria-label", musicToggle.title);
 }
 
 async function toggleMusic() {
@@ -74,16 +88,16 @@ async function toggleMusic() {
     if (isMusicPlaying) {
       bgMusic.pause();
       isMusicPlaying = false;
-      musicToggle.textContent = "🎵 Music: Off";
+      syncMusicButtonUI();
       return;
     }
 
     await bgMusic.play();
     isMusicPlaying = true;
-    musicToggle.textContent = "🎵 Music: On";
+    syncMusicButtonUI();
   } catch (error) {
     isMusicPlaying = false;
-    musicToggle.textContent = "🎵 Tap to Play";
+    syncMusicButtonUI();
   }
 }
 
@@ -128,6 +142,53 @@ function initParticles() {
   setInterval(spawnSparkle, 360);
 }
 
+function initScrollReveal() {
+  const sections = document.querySelectorAll(".section");
+  sectionObserver = new IntersectionObserver(
+    (entries, observer) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add("in-view");
+          observer.unobserve(entry.target);
+        }
+      });
+    },
+    {
+      threshold: 0.15,
+      rootMargin: "0px 0px -10% 0px"
+    }
+  );
+
+  sections.forEach((section) => {
+    if (!section.classList.contains("hidden")) {
+      sectionObserver.observe(section);
+    }
+  });
+}
+
+function spawnCursorSparkle(x, y) {
+  const sparkle = document.createElement("span");
+  sparkle.className = "cursor-sparkle";
+  sparkle.style.left = `${x}px`;
+  sparkle.style.top = `${y}px`;
+  sparkle.style.animationDuration = `${450 + Math.random() * 500}ms`;
+  sparkleContainer.appendChild(sparkle);
+  setTimeout(() => sparkle.remove(), 900);
+}
+
+function initCursorSparkles() {
+  let lastTime = 0;
+  document.addEventListener("pointermove", (event) => {
+    const now = Date.now();
+    if (now - lastTime < 65) {
+      return;
+    }
+
+    lastTime = now;
+    spawnCursorSparkle(event.clientX, event.clientY);
+  });
+}
+
 function initEvents() {
   revealBtn.addEventListener("click", revealLoveMessage);
   surpriseBtn.addEventListener("click", toggleSurprise);
@@ -136,8 +197,11 @@ function initEvents() {
 
 function init() {
   updateLoveCounter();
+  syncMusicButtonUI();
   initEvents();
+  initScrollReveal();
   initParticles();
+  initCursorSparkles();
 }
 
 init();
