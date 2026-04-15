@@ -24,12 +24,19 @@
     🎵
   </button>
 
+  <div id="dailySurprise" class="daily-surprise hidden" role="status" aria-live="polite"></div>
+
   <main>
     <section class="hero section card-glass" id="home">
       <p class="tag">for the prettiest soul i know ✨</p>
       <h1 class="hero-title heartbeat">Hi Love 💖</h1>
       <p class="hero-subtitle">I made this just for you...</p>
       <button id="revealBtn" class="btn btn-primary heartbeat-soft">Click me baby 🥺💖</button>
+      <div class="mode-toggle-wrap" role="group" aria-label="Particle mode toggle">
+        <button class="mode-btn active" data-mode="hearts" type="button">💖 Hearts</button>
+        <button class="mode-btn" data-mode="petals" type="button">🌸 Petals</button>
+        <button class="mode-btn" data-mode="sparkles" type="button">✨ Sparkles</button>
+      </div>
       <p class="floating-love-note">I love you more than words can explain 💖</p>
     </section>
 
@@ -73,13 +80,51 @@
       <p id="surpriseMessage" class="surprise-message hidden">I love you more than anything in this world 💖</p>
       <button id="missMeBtn" class="btn btn-primary miss-me-btn">Tap this when you miss me 💗</button>
     </section>
+
+    <div class="cute-divider" aria-hidden="true">💗 ✨ 💗</div>
+
+    <section class="section card-glass" id="openWhenSection">
+      <h2 class="section-title">Open When... 💌</h2>
+      <div class="open-when-grid">
+        <button class="btn btn-secondary letter-btn" data-letter="sad" type="button">Open when you're sad 🥺</button>
+        <button class="btn btn-secondary letter-btn" data-letter="miss" type="button">Open when you miss me 💖</button>
+        <button class="btn btn-secondary letter-btn" data-letter="sleep" type="button">Open when you can't sleep 🌙</button>
+      </div>
+    </section>
+
+    <div class="cute-divider" aria-hidden="true">🌙 ✨ 🌙</div>
+
+    <section class="section universe-section" id="ourUniverse">
+      <h2 class="section-title">Our Little Universe 🌌</h2>
+      <p class="universe-subtitle">Tap a star and I will whisper a memory to your heart.</p>
+      <div id="universeStars" class="universe-stars" aria-live="polite"></div>
+      <p id="universeMessage" class="universe-message hidden"></p>
+    </section>
+
+    <div class="cute-divider" aria-hidden="true">💞 ✨ 💞</div>
+
+    <section class="section card-glass" id="heartCollector">
+      <h2 class="section-title">Heart Collector Game 🤍</h2>
+      <p class="collector-meta">Collected: <span id="heartScore">0</span>/<span id="heartGoal">12</span></p>
+      <div id="heartGameArea" class="heart-game-area" aria-label="Heart collector mini game"></div>
+      <p id="heartGameMessage" class="heart-game-message hidden">You collected all my love... but I still have more for you 💖</p>
+    </section>
   </main>
 
   <div id="loveMomentOverlay" class="love-moment-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="loveMomentTitle">
     <div class="love-moment-card card-glass">
       <h2 id="loveMomentTitle" class="section-title heartbeat">For You 💗</h2>
       <p class="love-moment-message">No matter where you are... I’m always right here loving you 💖</p>
-      <button id="closeLoveMomentBtn" class="btn btn-secondary">Hold me close 🤍</button>
+      <p id="hugMessage" class="hug-message hidden">If I were there right now... I'd hold you close and never let go 🤍</p>
+      <button id="closeLoveMomentBtn" class="btn btn-secondary hug-btn" type="button">Hold me close 🤍</button>
+    </div>
+  </div>
+
+  <div id="lettersModal" class="letters-modal hidden" role="dialog" aria-modal="true" aria-labelledby="lettersModalTitle">
+    <div class="letters-modal-card card-glass">
+      <h2 id="lettersModalTitle" class="section-title">A letter for you 💖</h2>
+      <p id="lettersModalText" class="letters-modal-text" aria-live="polite"></p>
+      <button id="lettersCloseBtn" class="btn btn-secondary" type="button">Close softly ✨</button>
     </div>
   </div>
 

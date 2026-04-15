@@ -12,7 +12,20 @@ const loveWhisperContainer = document.getElementById("loveWhisperContainer");
 const missMeBtn = document.getElementById("missMeBtn");
 const closeLoveMomentBtn = document.getElementById("closeLoveMomentBtn");
 const loveMomentOverlay = document.getElementById("loveMomentOverlay");
+const hugMessage = document.getElementById("hugMessage");
 const faviconEl = document.getElementById("dynamicFavicon");
+const dailySurprise = document.getElementById("dailySurprise");
+const letterButtons = document.querySelectorAll(".letter-btn");
+const lettersModal = document.getElementById("lettersModal");
+const lettersModalText = document.getElementById("lettersModalText");
+const lettersCloseBtn = document.getElementById("lettersCloseBtn");
+const universeStars = document.getElementById("universeStars");
+const universeMessage = document.getElementById("universeMessage");
+const heartScore = document.getElementById("heartScore");
+const heartGoal = document.getElementById("heartGoal");
+const heartGameArea = document.getElementById("heartGameArea");
+const heartGameMessage = document.getElementById("heartGameMessage");
+const modeButtons = document.querySelectorAll(".mode-btn");
 
 const loveDate = new Date("2021-08-02T00:00:00");
 const romanticMessage = `My love Romaliza,
@@ -28,11 +41,41 @@ No matter where life takes us, my heart will always find its way back to yours.
 
 Forever yours. 💖`;
 
-let typingStarted = false;
-let isMusicPlaying = false;
-let sectionObserver = null;
-let motionProfile = null;
-let overlayHeartTimer = null;
+const letterMessages = {
+  sad: `Hey love,
+
+If today feels heavy, come here for a second and breathe with me.
+You are never alone in your pain, and I will always stay by your side.
+
+You are strong, precious, and deeply loved. 🤍`,
+  miss: `Hi baby,
+
+If you miss me, close your eyes and imagine my arms around you.
+Every heartbeat of mine says your name with so much love.
+
+Distance can never make me love you less. 💖`,
+  sleep: `My love,
+
+When night feels long, let this be your soft little lullaby.
+You are safe, you are cherished, and tomorrow is another day for us.
+
+Sleep peacefully, my favorite person. 🌙`
+};
+
+const universeMemories = [
+  "Remember our first long conversation? I still replay it with a smile.",
+  "You made an ordinary day feel magical just by being there.",
+  "Your laugh is my favorite sound in this universe.",
+  "Loving you is the easiest thing my heart has ever done.",
+  "Every memory with you feels like a tiny star I keep forever.",
+  "You turned my world into a softer, brighter place."
+];
+
+const dailyMessages = [
+  "You are my favorite person 💖",
+  "I'm always thinking about you 🥺",
+  "You make my world brighter ✨"
+];
 
 const whisperLines = [
   "I love you 💖",
@@ -40,6 +83,18 @@ const whisperLines = [
   "You are my home 🤍",
   "Forever us ✨"
 ];
+
+let typingStarted = false;
+let isMusicPlaying = false;
+let sectionObserver = null;
+let motionProfile = null;
+let overlayHeartTimer = null;
+let hugCloseTimer = null;
+let particleTimer = null;
+let sparkleTimer = null;
+let currentParticleMode = "hearts";
+let collectorScore = 0;
+let collectorSpawnTimer = null;
 
 function getMotionProfile() {
   const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -49,12 +104,12 @@ function getMotionProfile() {
 
   if (prefersReducedMotion) {
     return {
-      heartInterval: 2000,
+      particleInterval: 1900,
       sparkleInterval: 2200,
-      heartDurationMin: 8000,
-      heartDurationRange: 2500,
-      heartSizeMin: 10,
-      heartSizeRange: 10,
+      particleDurationMin: 7800,
+      particleDurationRange: 2200,
+      particleSizeMin: 10,
+      particleSizeRange: 10,
       sparkleDurationMin: 1400,
       sparkleDurationRange: 900,
       cursorSparkles: false,
@@ -64,41 +119,41 @@ function getMotionProfile() {
 
   if (isSmallMobile) {
     return {
-      heartInterval: 950,
-      sparkleInterval: 880,
-      heartDurationMin: 9800,
-      heartDurationRange: 4400,
-      heartSizeMin: 10,
-      heartSizeRange: 15,
+      particleInterval: 960,
+      sparkleInterval: 900,
+      particleDurationMin: 9400,
+      particleDurationRange: 3600,
+      particleSizeMin: 10,
+      particleSizeRange: 14,
       sparkleDurationMin: 1700,
-      sparkleDurationRange: 1600,
+      sparkleDurationRange: 1400,
       cursorSparkles: false,
-      cursorThrottle: 110
+      cursorThrottle: 120
     };
   }
 
   if (isTablet) {
     return {
-      heartInterval: 700,
-      sparkleInterval: 620,
-      heartDurationMin: 8500,
-      heartDurationRange: 4200,
-      heartSizeMin: 11,
-      heartSizeRange: 18,
-      sparkleDurationMin: 1900,
-      sparkleDurationRange: 1700,
+      particleInterval: 700,
+      sparkleInterval: 640,
+      particleDurationMin: 8400,
+      particleDurationRange: 3400,
+      particleSizeMin: 11,
+      particleSizeRange: 17,
+      sparkleDurationMin: 1800,
+      sparkleDurationRange: 1500,
       cursorSparkles: !isCoarsePointer,
-      cursorThrottle: 85
+      cursorThrottle: 90
     };
   }
 
   return {
-    heartInterval: 520,
-    sparkleInterval: 360,
-    heartDurationMin: 7000,
-    heartDurationRange: 5000,
-    heartSizeMin: 12,
-    heartSizeRange: 24,
+    particleInterval: 520,
+    sparkleInterval: 380,
+    particleDurationMin: 7000,
+    particleDurationRange: 5000,
+    particleSizeMin: 12,
+    particleSizeRange: 24,
     sparkleDurationMin: 2500,
     sparkleDurationRange: 2400,
     cursorSparkles: true,
@@ -106,22 +161,38 @@ function getMotionProfile() {
   };
 }
 
+function safeAddListener(element, eventName, handler) {
+  if (element) {
+    element.addEventListener(eventName, handler);
+  }
+}
+
 function updateLoveCounter() {
+  if (!daysCount) {
+    return;
+  }
+
   const now = new Date();
   const diff = now - loveDate;
   const days = Math.max(0, Math.floor(diff / (1000 * 60 * 60 * 24)));
   daysCount.textContent = days.toLocaleString();
 }
 
-function typeWriter(text, element, speed = 30) {
+function typeWriter(text, element, speed = 30, onComplete = null) {
+  if (!element) {
+    return;
+  }
+
   element.textContent = "";
   element.classList.add("typing");
 
   let i = 0;
-
   function writeNextChar() {
     if (i >= text.length) {
       element.classList.remove("typing");
+      if (typeof onComplete === "function") {
+        onComplete();
+      }
       return;
     }
 
@@ -145,6 +216,10 @@ function typeWriter(text, element, speed = 30) {
 }
 
 function revealLoveMessage() {
+  if (!loveMessageSection) {
+    return;
+  }
+
   loveMessageSection.classList.remove("hidden");
   loveMessageSection.classList.add("in-view");
 
@@ -157,22 +232,23 @@ function revealLoveMessage() {
     typeWriter(romanticMessage, typedMessage, 26);
   }
 
-  loveMessageSection.scrollIntoView({
-    behavior: "smooth",
-    block: "start"
-  });
+  loveMessageSection.scrollIntoView({ behavior: "smooth", block: "start" });
 }
 
 function toggleSurprise() {
-  surpriseMessage.classList.toggle("hidden");
-  if (surpriseMessage.classList.contains("hidden")) {
-    surpriseBtn.textContent = "Open this 💌";
-  } else {
-    surpriseBtn.textContent = "You opened it 😍";
+  if (!surpriseMessage || !surpriseBtn) {
+    return;
   }
+
+  surpriseMessage.classList.toggle("hidden");
+  surpriseBtn.textContent = surpriseMessage.classList.contains("hidden") ? "Open this 💌" : "You opened it 😍";
 }
 
 function syncMusicButtonUI() {
+  if (!musicToggle) {
+    return;
+  }
+
   musicToggle.classList.toggle("playing", isMusicPlaying);
   musicToggle.textContent = isMusicPlaying ? "🎶" : "🎵";
   musicToggle.title = isMusicPlaying ? "Pause music" : "Play music";
@@ -180,6 +256,10 @@ function syncMusicButtonUI() {
 }
 
 async function toggleMusic() {
+  if (!bgMusic) {
+    return;
+  }
+
   try {
     if (isMusicPlaying) {
       bgMusic.pause();
@@ -198,62 +278,92 @@ async function toggleMusic() {
   }
 }
 
-function spawnHeart() {
-  const profile = motionProfile || getMotionProfile();
-  const heart = document.createElement("span");
-  heart.className = "heart";
-  heart.textContent = Math.random() > 0.35 ? "💖" : "💗";
+function getParticleDisplay() {
+  if (currentParticleMode === "petals") {
+    return { glyph: "🌸", className: "particle-petal" };
+  }
 
-  const left = 2 + Math.random() * 96;
-  const duration = profile.heartDurationMin + Math.random() * profile.heartDurationRange;
-  const size = profile.heartSizeMin + Math.random() * profile.heartSizeRange;
+  if (currentParticleMode === "sparkles") {
+    return { glyph: "✨", className: "particle-sparkle" };
+  }
 
-  heart.style.left = `${left}vw`;
-  heart.style.bottom = "-40px";
-  heart.style.fontSize = `${size}px`;
-  heart.style.animationDuration = `${duration}ms`;
-
-  heartContainer.appendChild(heart);
-
-  setTimeout(() => heart.remove(), duration);
+  return { glyph: Math.random() > 0.35 ? "💖" : "💗", className: "particle-heart" };
 }
 
-function spawnSparkle() {
+function spawnFloatingParticle() {
+  if (!heartContainer) {
+    return;
+  }
+
+  const profile = motionProfile || getMotionProfile();
+  const particle = document.createElement("span");
+  const display = getParticleDisplay();
+  particle.className = `heart ${display.className}`;
+  particle.textContent = display.glyph;
+
+  const left = 2 + Math.random() * 96;
+  const duration = profile.particleDurationMin + Math.random() * profile.particleDurationRange;
+  const size = profile.particleSizeMin + Math.random() * profile.particleSizeRange;
+
+  particle.style.left = `${left}vw`;
+  particle.style.bottom = "-40px";
+  particle.style.fontSize = `${size}px`;
+  particle.style.animationDuration = `${duration}ms`;
+
+  heartContainer.appendChild(particle);
+  setTimeout(() => particle.remove(), duration);
+}
+
+function spawnAmbientSparkle() {
+  if (!sparkleContainer) {
+    return;
+  }
+
   const profile = motionProfile || getMotionProfile();
   const sparkle = document.createElement("span");
   sparkle.className = "sparkle";
+  sparkle.style.left = `${3 + Math.random() * 94}vw`;
+  sparkle.style.top = `${Math.random() * 100}vh`;
 
-  const left = 3 + Math.random() * 94;
-  const top = Math.random() * 100;
   const duration = profile.sparkleDurationMin + Math.random() * profile.sparkleDurationRange;
-
-  sparkle.style.left = `${left}vw`;
-  sparkle.style.top = `${top}vh`;
   sparkle.style.animationDuration = `${duration}ms`;
 
   sparkleContainer.appendChild(sparkle);
-
   setTimeout(() => sparkle.remove(), duration);
 }
 
-function initParticles() {
+function startParticleLoop() {
   motionProfile = getMotionProfile();
-  setInterval(spawnHeart, motionProfile.heartInterval);
-  setInterval(spawnSparkle, motionProfile.sparkleInterval);
+
+  if (particleTimer) {
+    clearInterval(particleTimer);
+  }
+
+  if (sparkleTimer) {
+    clearInterval(sparkleTimer);
+  }
+
+  particleTimer = setInterval(spawnFloatingParticle, motionProfile.particleInterval);
+  sparkleTimer = setInterval(spawnAmbientSparkle, motionProfile.sparkleInterval);
+}
+
+function initParticles() {
+  startParticleLoop();
 }
 
 function spawnLoveWhisper() {
+  if (!loveWhisperContainer) {
+    return;
+  }
+
   const whisper = document.createElement("span");
   whisper.className = "love-whisper";
   whisper.textContent = whisperLines[Math.floor(Math.random() * whisperLines.length)];
-
-  const left = 6 + Math.random() * 84;
-  const duration = 6800 + Math.random() * 4400;
-  const size = 14 + Math.random() * 14;
-
-  whisper.style.left = `${left}vw`;
+  whisper.style.left = `${6 + Math.random() * 84}vw`;
   whisper.style.bottom = `${6 + Math.random() * 14}vh`;
-  whisper.style.fontSize = `${size}px`;
+  whisper.style.fontSize = `${14 + Math.random() * 14}px`;
+
+  const duration = 6800 + Math.random() * 4400;
   whisper.style.animationDuration = `${duration}ms`;
 
   loveWhisperContainer.appendChild(whisper);
@@ -261,7 +371,7 @@ function spawnLoveWhisper() {
 }
 
 function initLoveWhispers() {
-  const interval = motionProfile && motionProfile.heartInterval > 900 ? 12000 : 8400;
+  const interval = motionProfile && motionProfile.particleInterval > 900 ? 12000 : 8400;
   setInterval(spawnLoveWhisper, interval);
 }
 
@@ -271,14 +381,10 @@ function spawnClickHeartBurst(x, y) {
     const heart = document.createElement("span");
     heart.className = "click-heart";
     heart.textContent = hearts[Math.floor(Math.random() * hearts.length)];
-
-    const offsetX = (Math.random() - 0.5) * 70;
-    const offsetY = (Math.random() - 0.5) * 35;
-    heart.style.left = `${x + offsetX}px`;
-    heart.style.top = `${y + offsetY}px`;
+    heart.style.left = `${x + (Math.random() - 0.5) * 70}px`;
+    heart.style.top = `${y + (Math.random() - 0.5) * 35}px`;
     heart.style.fontSize = `${12 + Math.random() * 14}px`;
     heart.style.animationDelay = `${Math.random() * 100}ms`;
-
     document.body.appendChild(heart);
     setTimeout(() => heart.remove(), 1000);
   }
@@ -286,11 +392,9 @@ function spawnClickHeartBurst(x, y) {
 
 function initHeartBurstClicks() {
   document.addEventListener("pointerdown", (event) => {
-    // Ignore right click and multi-touch secondary pointers.
     if (event.button && event.button !== 0) {
       return;
     }
-
     spawnClickHeartBurst(event.clientX, event.clientY);
   });
 }
@@ -301,17 +405,15 @@ function initParallax() {
   }
 
   document.addEventListener("pointermove", (event) => {
-    const xRatio = (event.clientX / window.innerWidth - 0.5) * 2;
-    const yRatio = (event.clientY / window.innerHeight - 0.5) * 2;
-    const x = (xRatio * 7).toFixed(2);
-    const y = (yRatio * 7).toFixed(2);
+    const x = ((event.clientX / window.innerWidth - 0.5) * 14).toFixed(2);
+    const y = ((event.clientY / window.innerHeight - 0.5) * 14).toFixed(2);
     document.body.style.setProperty("--parallax-x", `${x}px`);
     document.body.style.setProperty("--parallax-y", `${y}px`);
   });
 }
 
 function spawnMomentHeart() {
-  if (loveMomentOverlay.classList.contains("hidden")) {
+  if (!loveMomentOverlay || loveMomentOverlay.classList.contains("hidden")) {
     return;
   }
 
@@ -320,24 +422,98 @@ function spawnMomentHeart() {
   heart.textContent = Math.random() > 0.2 ? "💗" : "✨";
   heart.style.left = `${4 + Math.random() * 92}vw`;
   heart.style.bottom = "-30px";
+
   const duration = 6500 + Math.random() * 3500;
   heart.style.animationDuration = `${duration}ms`;
   heart.style.fontSize = `${16 + Math.random() * 24}px`;
+
   loveMomentOverlay.appendChild(heart);
   setTimeout(() => heart.remove(), duration);
 }
 
 function openLoveMoment() {
+  if (!loveMomentOverlay) {
+    return;
+  }
+
   loveMomentOverlay.classList.remove("hidden");
+  if (hugMessage) {
+    hugMessage.classList.add("hidden");
+  }
+
+  if (closeLoveMomentBtn) {
+    closeLoveMomentBtn.disabled = false;
+    closeLoveMomentBtn.textContent = "Hold me close 🤍";
+  }
+
+  if (overlayHeartTimer) {
+    clearInterval(overlayHeartTimer);
+  }
   overlayHeartTimer = setInterval(spawnMomentHeart, 420);
 }
 
 function closeLoveMoment() {
+  if (!loveMomentOverlay) {
+    return;
+  }
+
   loveMomentOverlay.classList.add("hidden");
   if (overlayHeartTimer) {
     clearInterval(overlayHeartTimer);
     overlayHeartTimer = null;
   }
+
+  if (hugCloseTimer) {
+    clearTimeout(hugCloseTimer);
+    hugCloseTimer = null;
+  }
+
+  if (hugMessage) {
+    hugMessage.classList.add("hidden");
+  }
+
+  if (closeLoveMomentBtn) {
+    closeLoveMomentBtn.disabled = false;
+    closeLoveMomentBtn.textContent = "Hold me close 🤍";
+  }
+}
+
+function boostHeartsForHug() {
+  let count = 0;
+  const booster = setInterval(() => {
+    spawnFloatingParticle();
+    count += 1;
+    if (count > 16) {
+      clearInterval(booster);
+    }
+  }, 120);
+}
+
+function triggerVirtualHug() {
+  if (!loveMomentOverlay || loveMomentOverlay.classList.contains("hidden")) {
+    return;
+  }
+
+  if (hugMessage) {
+    hugMessage.classList.remove("hidden");
+  }
+
+  if (closeLoveMomentBtn) {
+    closeLoveMomentBtn.disabled = true;
+    closeLoveMomentBtn.textContent = "Holding you tight 🤍";
+  }
+
+  document.body.classList.add("virtual-hug-active");
+  setTimeout(() => document.body.classList.remove("virtual-hug-active"), 900);
+  boostHeartsForHug();
+
+  if (hugCloseTimer) {
+    clearTimeout(hugCloseTimer);
+  }
+
+  hugCloseTimer = setTimeout(() => {
+    closeLoveMoment();
+  }, 1500);
 }
 
 function createEmojiFavicon(emoji) {
@@ -346,6 +522,10 @@ function createEmojiFavicon(emoji) {
 }
 
 function initAnimatedFavicon() {
+  if (!faviconEl) {
+    return;
+  }
+
   const icons = [createEmojiFavicon("💗"), createEmojiFavicon("✨")];
   let index = 0;
   setInterval(() => {
@@ -356,6 +536,12 @@ function initAnimatedFavicon() {
 
 function initScrollReveal() {
   const sections = document.querySelectorAll(".section");
+
+  if (!("IntersectionObserver" in window)) {
+    sections.forEach((section) => section.classList.add("in-view"));
+    return;
+  }
+
   sectionObserver = new IntersectionObserver(
     (entries, observer) => {
       entries.forEach((entry) => {
@@ -365,10 +551,7 @@ function initScrollReveal() {
         }
       });
     },
-    {
-      threshold: 0.15,
-      rootMargin: "0px 0px -10% 0px"
-    }
+    { threshold: 0.15, rootMargin: "0px 0px -10% 0px" }
   );
 
   sections.forEach((section) => {
@@ -379,6 +562,10 @@ function initScrollReveal() {
 }
 
 function spawnCursorSparkle(x, y) {
+  if (!sparkleContainer) {
+    return;
+  }
+
   const sparkle = document.createElement("span");
   sparkle.className = "cursor-sparkle";
   sparkle.style.left = `${x}px`;
@@ -389,7 +576,7 @@ function spawnCursorSparkle(x, y) {
 }
 
 function initCursorSparkles() {
-  if (!motionProfile.cursorSparkles) {
+  if (!motionProfile || !motionProfile.cursorSparkles) {
     return;
   }
 
@@ -405,21 +592,171 @@ function initCursorSparkles() {
   });
 }
 
+function showDailySurprise() {
+  if (!dailySurprise) {
+    return;
+  }
+
+  dailySurprise.textContent = dailyMessages[Math.floor(Math.random() * dailyMessages.length)];
+  dailySurprise.classList.remove("hidden");
+  setTimeout(() => dailySurprise.classList.add("hidden"), 6500);
+}
+
+function openLetter(type) {
+  const message = letterMessages[type];
+  if (!message || !lettersModal || !lettersModalText) {
+    return;
+  }
+
+  lettersModal.classList.remove("hidden");
+  typeWriter(message, lettersModalText, 24);
+}
+
+function closeLettersModal() {
+  if (lettersModal) {
+    lettersModal.classList.add("hidden");
+  }
+}
+
+function initOpenWhenLetters() {
+  letterButtons.forEach((button) => {
+    safeAddListener(button, "click", () => openLetter(button.dataset.letter));
+  });
+
+  safeAddListener(lettersCloseBtn, "click", closeLettersModal);
+  safeAddListener(lettersModal, "click", (event) => {
+    if (event.target === lettersModal) {
+      closeLettersModal();
+    }
+  });
+}
+
+function initUniverseStars() {
+  if (!universeStars || !universeMessage) {
+    return;
+  }
+
+  universeStars.innerHTML = "";
+  for (let i = 0; i < 18; i += 1) {
+    const star = document.createElement("button");
+    star.className = "star-node";
+    star.type = "button";
+    star.textContent = "✦";
+    star.style.left = `${4 + Math.random() * 90}%`;
+    star.style.top = `${6 + Math.random() * 86}%`;
+    star.style.fontSize = `${12 + Math.random() * 12}px`;
+    star.style.animationDelay = `${Math.random() * 1200}ms`;
+
+    safeAddListener(star, "click", () => {
+      const message = universeMemories[Math.floor(Math.random() * universeMemories.length)];
+      universeMessage.textContent = message;
+      universeMessage.classList.remove("hidden");
+    });
+
+    universeStars.appendChild(star);
+  }
+}
+
+function spawnCollectorHeart() {
+  if (!heartGameArea || collectorScore >= Number(heartGoal.textContent || "12")) {
+    return;
+  }
+
+  if (heartGameArea.childElementCount > 10) {
+    return;
+  }
+
+  const heart = document.createElement("button");
+  heart.type = "button";
+  heart.className = "collector-heart";
+  heart.textContent = Math.random() > 0.3 ? "💖" : "💗";
+  heart.style.left = `${4 + Math.random() * 88}%`;
+  heart.style.top = `${6 + Math.random() * 78}%`;
+  heart.style.fontSize = `${18 + Math.random() * 16}px`;
+
+  safeAddListener(heart, "click", () => {
+    collectorScore += 1;
+    if (heartScore) {
+      heartScore.textContent = String(collectorScore);
+    }
+    heart.remove();
+
+    const goal = Number(heartGoal.textContent || "12");
+    if (collectorScore >= goal) {
+      if (heartGameMessage) {
+        heartGameMessage.classList.remove("hidden");
+      }
+      if (collectorSpawnTimer) {
+        clearInterval(collectorSpawnTimer);
+      }
+    }
+  });
+
+  heartGameArea.appendChild(heart);
+}
+
+function initHeartCollector() {
+  if (!heartGameArea || !heartGoal) {
+    return;
+  }
+
+  collectorScore = 0;
+  if (heartScore) {
+    heartScore.textContent = "0";
+  }
+
+  heartGameArea.innerHTML = "";
+  if (heartGameMessage) {
+    heartGameMessage.classList.add("hidden");
+  }
+
+  for (let i = 0; i < 6; i += 1) {
+    spawnCollectorHeart();
+  }
+
+  collectorSpawnTimer = setInterval(spawnCollectorHeart, 1100);
+}
+
+function initParticleModeToggle() {
+  modeButtons.forEach((button) => {
+    safeAddListener(button, "click", () => {
+      currentParticleMode = button.dataset.mode || "hearts";
+      modeButtons.forEach((item) => item.classList.remove("active"));
+      button.classList.add("active");
+    });
+  });
+}
+
 function initEvents() {
-  revealBtn.addEventListener("click", revealLoveMessage);
-  surpriseBtn.addEventListener("click", toggleSurprise);
-  musicToggle.addEventListener("click", toggleMusic);
-  missMeBtn.addEventListener("click", openLoveMoment);
-  closeLoveMomentBtn.addEventListener("click", closeLoveMoment);
-  loveMomentOverlay.addEventListener("click", (event) => {
+  safeAddListener(revealBtn, "click", revealLoveMessage);
+  safeAddListener(surpriseBtn, "click", toggleSurprise);
+  safeAddListener(musicToggle, "click", toggleMusic);
+  safeAddListener(missMeBtn, "click", openLoveMoment);
+  safeAddListener(closeLoveMomentBtn, "click", (event) => {
+    event.preventDefault();
+    triggerVirtualHug();
+  });
+
+  safeAddListener(loveMomentOverlay, "click", (event) => {
     if (event.target === loveMomentOverlay) {
+      closeLoveMoment();
+    }
+  });
+
+  // Escape key closes overlays softly.
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape") {
+      closeLettersModal();
       closeLoveMoment();
     }
   });
 }
 
 function init() {
-  bgMusic.muted = true;
+  if (bgMusic) {
+    bgMusic.muted = true;
+  }
+
   updateLoveCounter();
   syncMusicButtonUI();
   initEvents();
@@ -430,7 +767,16 @@ function init() {
   initHeartBurstClicks();
   initParallax();
   initAnimatedFavicon();
+  initOpenWhenLetters();
+  initUniverseStars();
+  initHeartCollector();
+  initParticleModeToggle();
+  showDailySurprise();
 }
 
-init();
+if (document.readyState === "loading") {
+  document.addEventListener("DOMContentLoaded", init);
+} else {
+  init();
+}
 
