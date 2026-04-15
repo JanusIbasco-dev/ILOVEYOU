@@ -10,7 +10,7 @@ const heartContainer = document.getElementById("heartContainer");
 const sparkleContainer = document.getElementById("sparkleContainer");
 
 const loveDate = new Date("2021-08-02T00:00:00");
-const romanticMessage = `My love,
+const romanticMessage = `My love Romaliza,
 
 Every day with you feels like a soft sunrise after a long night.
 You make my world calmer, brighter, and warmer in ways words can barely hold.
@@ -26,6 +26,72 @@ Forever yours. 💖`;
 let typingStarted = false;
 let isMusicPlaying = false;
 let sectionObserver = null;
+let motionProfile = null;
+
+function getMotionProfile() {
+  const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const isSmallMobile = window.matchMedia("(max-width: 480px)").matches;
+  const isTablet = window.matchMedia("(max-width: 768px)").matches;
+  const isCoarsePointer = window.matchMedia("(pointer: coarse)").matches;
+
+  if (prefersReducedMotion) {
+    return {
+      heartInterval: 2000,
+      sparkleInterval: 2200,
+      heartDurationMin: 8000,
+      heartDurationRange: 2500,
+      heartSizeMin: 10,
+      heartSizeRange: 10,
+      sparkleDurationMin: 1400,
+      sparkleDurationRange: 900,
+      cursorSparkles: false,
+      cursorThrottle: 180
+    };
+  }
+
+  if (isSmallMobile) {
+    return {
+      heartInterval: 950,
+      sparkleInterval: 880,
+      heartDurationMin: 9800,
+      heartDurationRange: 4400,
+      heartSizeMin: 10,
+      heartSizeRange: 15,
+      sparkleDurationMin: 1700,
+      sparkleDurationRange: 1600,
+      cursorSparkles: false,
+      cursorThrottle: 110
+    };
+  }
+
+  if (isTablet) {
+    return {
+      heartInterval: 700,
+      sparkleInterval: 620,
+      heartDurationMin: 8500,
+      heartDurationRange: 4200,
+      heartSizeMin: 11,
+      heartSizeRange: 18,
+      sparkleDurationMin: 1900,
+      sparkleDurationRange: 1700,
+      cursorSparkles: !isCoarsePointer,
+      cursorThrottle: 85
+    };
+  }
+
+  return {
+    heartInterval: 520,
+    sparkleInterval: 360,
+    heartDurationMin: 7000,
+    heartDurationRange: 5000,
+    heartSizeMin: 12,
+    heartSizeRange: 24,
+    sparkleDurationMin: 2500,
+    sparkleDurationRange: 2400,
+    cursorSparkles: true,
+    cursorThrottle: 65
+  };
+}
 
 function updateLoveCounter() {
   const now = new Date();
@@ -102,13 +168,14 @@ async function toggleMusic() {
 }
 
 function spawnHeart() {
+  const profile = motionProfile || getMotionProfile();
   const heart = document.createElement("span");
   heart.className = "heart";
   heart.textContent = Math.random() > 0.35 ? "💖" : "💗";
 
-  const left = Math.random() * 100;
-  const duration = 7000 + Math.random() * 5000;
-  const size = 12 + Math.random() * 24;
+  const left = 2 + Math.random() * 96;
+  const duration = profile.heartDurationMin + Math.random() * profile.heartDurationRange;
+  const size = profile.heartSizeMin + Math.random() * profile.heartSizeRange;
 
   heart.style.left = `${left}vw`;
   heart.style.bottom = "-40px";
@@ -121,12 +188,13 @@ function spawnHeart() {
 }
 
 function spawnSparkle() {
+  const profile = motionProfile || getMotionProfile();
   const sparkle = document.createElement("span");
   sparkle.className = "sparkle";
 
-  const left = Math.random() * 100;
+  const left = 3 + Math.random() * 94;
   const top = Math.random() * 100;
-  const duration = 2500 + Math.random() * 2400;
+  const duration = profile.sparkleDurationMin + Math.random() * profile.sparkleDurationRange;
 
   sparkle.style.left = `${left}vw`;
   sparkle.style.top = `${top}vh`;
@@ -138,8 +206,9 @@ function spawnSparkle() {
 }
 
 function initParticles() {
-  setInterval(spawnHeart, 520);
-  setInterval(spawnSparkle, 360);
+  motionProfile = getMotionProfile();
+  setInterval(spawnHeart, motionProfile.heartInterval);
+  setInterval(spawnSparkle, motionProfile.sparkleInterval);
 }
 
 function initScrollReveal() {
@@ -177,10 +246,14 @@ function spawnCursorSparkle(x, y) {
 }
 
 function initCursorSparkles() {
+  if (!motionProfile.cursorSparkles) {
+    return;
+  }
+
   let lastTime = 0;
   document.addEventListener("pointermove", (event) => {
     const now = Date.now();
-    if (now - lastTime < 65) {
+    if (now - lastTime < motionProfile.cursorThrottle) {
       return;
     }
 
