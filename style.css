@@ -216,33 +216,6 @@ main {
   box-shadow: 0 16px 25px rgba(151, 121, 181, 0.24);
 }
 
-.gallery-grid {
-  margin-top: 1.2rem;
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 0.9rem;
-}
-
-.gallery-item {
-  margin: 0;
-  border-radius: 22px;
-  overflow: hidden;
-  box-shadow: var(--shadow);
-}
-
-.gallery-item img {
-  width: 100%;
-  height: 100%;
-  display: block;
-  aspect-ratio: 3 / 2;
-  object-fit: cover;
-  transition: transform 360ms ease, filter 360ms ease;
-}
-
-.gallery-item:hover img {
-  transform: scale(1.08);
-  filter: saturate(1.15);
-}
 
 .counter-value {
   font-size: clamp(1.2rem, 3.8vw, 1.8rem);
