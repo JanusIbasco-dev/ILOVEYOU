@@ -22,10 +22,14 @@ body {
 }
 
 body {
+  --parallax-x: 0px;
+  --parallax-y: 0px;
   min-height: 100vh;
   font-family: "Poppins", sans-serif;
   color: var(--text);
   background: linear-gradient(140deg, var(--pink) 0%, var(--lavender) 52%, var(--peach) 100%);
+  background-size: 220% 220%;
+  animation: gradientShift 22s ease-in-out infinite;
   overflow-x: hidden;
   position: relative;
   line-height: 1.6;
@@ -48,10 +52,12 @@ img {
   filter: blur(24px);
   z-index: -3;
   animation: pulseGlow 9s ease-in-out infinite alternate;
+  transform: translate3d(var(--parallax-x), var(--parallax-y), 0);
 }
 
 #heartContainer,
-#sparkleContainer {
+#sparkleContainer,
+#loveWhisperContainer {
   position: fixed;
   inset: 0;
   pointer-events: none;
@@ -61,7 +67,10 @@ img {
 
 .heart,
 .sparkle,
-.cursor-sparkle {
+.cursor-sparkle,
+.love-whisper,
+.click-heart,
+.moment-heart {
   position: absolute;
   opacity: 0;
   will-change: transform, opacity;
@@ -81,6 +90,28 @@ img {
   background: rgba(255, 255, 255, 0.94);
   box-shadow: 0 0 14px rgba(255, 255, 255, 0.95);
   animation: twinkle linear forwards;
+}
+
+.love-whisper {
+  font-family: "Dancing Script", cursive;
+  color: rgba(208, 88, 153, 0.85);
+  text-shadow: 0 0 16px rgba(255, 190, 218, 0.7);
+  white-space: nowrap;
+  animation: whisperFloat linear forwards;
+}
+
+.click-heart {
+  font-size: 14px;
+  text-shadow: var(--soft-glow);
+  animation: clickBurst 950ms ease-out forwards;
+  z-index: 5;
+  pointer-events: none;
+}
+
+.moment-heart {
+  color: rgba(255, 174, 209, 0.95);
+  text-shadow: var(--soft-glow);
+  animation: momentHeartRise linear forwards;
 }
 
 main {
@@ -154,6 +185,7 @@ main {
 .section-title {
   font-size: clamp(2rem, 6vw, 3.1rem);
   text-align: center;
+  letter-spacing: 0.02em;
 }
 
 .floating-love-note {
@@ -201,6 +233,7 @@ main {
 .btn:hover {
   transform: translateY(-3px) scale(1.05);
   filter: saturate(1.08);
+  animation: hoverBounce 380ms ease;
 }
 
 .btn:hover::after {
@@ -240,6 +273,13 @@ main {
   font-size: 1.04rem;
   white-space: pre-wrap;
   overflow-wrap: anywhere;
+}
+
+.typed-message.typing::after {
+  content: "|";
+  color: #d45e9f;
+  margin-left: 2px;
+  animation: cursorBlink 850ms steps(1) infinite;
 }
 
 .reasons-grid {
@@ -317,6 +357,37 @@ main {
   animation: popIn 500ms ease forwards;
 }
 
+.miss-me-btn {
+  margin-top: 0.9rem;
+}
+
+.love-moment-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 30;
+  display: grid;
+  place-items: center;
+  background: rgba(82, 44, 99, 0.42);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  animation: overlayFade 420ms ease;
+}
+
+.love-moment-card {
+  width: min(620px, 90vw);
+  text-align: center;
+  box-shadow: 0 18px 44px rgba(113, 91, 150, 0.3);
+}
+
+.love-moment-message {
+  margin: 0.9rem 0 1.1rem;
+  font-family: "Dancing Script", cursive;
+  font-size: clamp(1.5rem, 4.8vw, 2.35rem);
+  color: #d5589b;
+  text-shadow: var(--soft-glow);
+  animation: fadeInUpSoft 900ms ease;
+}
+
 .music-toggle {
   position: fixed;
   top: 14px;
@@ -348,7 +419,8 @@ main {
 .footer {
   text-align: center;
   padding: 1.2rem 1rem 2.4rem;
-  font-size: 0.95rem;
+  font-family: "Dancing Script", cursive;
+  font-size: clamp(1.2rem, 3vw, 1.7rem);
   color: #7a5f96;
 }
 
@@ -369,6 +441,20 @@ main {
 
   50% {
     transform: translateY(-8px);
+  }
+}
+
+@keyframes gradientShift {
+  0% {
+    background-position: 0% 40%;
+  }
+
+  50% {
+    background-position: 100% 60%;
+  }
+
+  100% {
+    background-position: 0% 40%;
   }
 }
 
@@ -405,6 +491,20 @@ main {
 
   52% {
     transform: scale(1.03);
+  }
+}
+
+@keyframes hoverBounce {
+  0% {
+    transform: translateY(-3px) scale(1.02);
+  }
+
+  55% {
+    transform: translateY(-5px) scale(1.07);
+  }
+
+  100% {
+    transform: translateY(-3px) scale(1.05);
   }
 }
 
@@ -454,6 +554,86 @@ main {
   100% {
     opacity: 0;
     transform: scale(0.2) translateY(-20vh);
+  }
+}
+
+@keyframes cursorBlink {
+  0%,
+  45% {
+    opacity: 1;
+  }
+
+  50%,
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes whisperFloat {
+  0% {
+    opacity: 0;
+    transform: translateY(20px) scale(0.9);
+  }
+
+  10%,
+  80% {
+    opacity: 0.95;
+  }
+
+  100% {
+    opacity: 0;
+    transform: translateY(-90px) scale(1.05);
+  }
+}
+
+@keyframes clickBurst {
+  0% {
+    opacity: 1;
+    transform: translateY(0) scale(0.6);
+  }
+
+  100% {
+    opacity: 0;
+    transform: translateY(-42px) scale(1.5);
+  }
+}
+
+@keyframes momentHeartRise {
+  0% {
+    opacity: 0;
+    transform: translateY(20px) scale(0.8);
+  }
+
+  20%,
+  80% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 0;
+    transform: translateY(-70vh) scale(1.2);
+  }
+}
+
+@keyframes overlayFade {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes fadeInUpSoft {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }
 
@@ -524,6 +704,10 @@ main {
     right: 10px;
     font-size: 1.08rem;
   }
+
+  .love-moment-card {
+    width: min(560px, 92vw);
+  }
 }
 
 @media (max-width: 480px) {
@@ -591,6 +775,10 @@ main {
     top: 8px;
     right: 8px;
     font-size: 1rem;
+  }
+
+  .love-moment-message {
+    font-size: clamp(1.3rem, 7vw, 1.8rem);
   }
 
   .heart,

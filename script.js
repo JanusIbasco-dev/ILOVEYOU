@@ -8,6 +8,11 @@ const musicToggle = document.getElementById("musicToggle");
 const bgMusic = document.getElementById("bgMusic");
 const heartContainer = document.getElementById("heartContainer");
 const sparkleContainer = document.getElementById("sparkleContainer");
+const loveWhisperContainer = document.getElementById("loveWhisperContainer");
+const missMeBtn = document.getElementById("missMeBtn");
+const closeLoveMomentBtn = document.getElementById("closeLoveMomentBtn");
+const loveMomentOverlay = document.getElementById("loveMomentOverlay");
+const faviconEl = document.getElementById("dynamicFavicon");
 
 const loveDate = new Date("2021-08-02T00:00:00");
 const romanticMessage = `My love Romaliza,
@@ -27,6 +32,14 @@ let typingStarted = false;
 let isMusicPlaying = false;
 let sectionObserver = null;
 let motionProfile = null;
+let overlayHeartTimer = null;
+
+const whisperLines = [
+  "I love you 💖",
+  "You are my favorite person 🥺",
+  "You are my home 🤍",
+  "Forever us ✨"
+];
 
 function getMotionProfile() {
   const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -102,16 +115,33 @@ function updateLoveCounter() {
 
 function typeWriter(text, element, speed = 30) {
   element.textContent = "";
+  element.classList.add("typing");
+
   let i = 0;
 
-  const intervalId = setInterval(() => {
-    element.textContent += text.charAt(i);
+  function writeNextChar() {
+    if (i >= text.length) {
+      element.classList.remove("typing");
+      return;
+    }
+
+    const char = text.charAt(i);
+    element.textContent += char;
     i += 1;
 
-    if (i >= text.length) {
-      clearInterval(intervalId);
+    let delay = speed;
+    if (char === "." || char === "!" || char === "?") {
+      delay = 280;
+    } else if (char === "," || char === ";" || char === ":") {
+      delay = 130;
+    } else if (char === "\n") {
+      delay = 260;
     }
-  }, speed);
+
+    setTimeout(writeNextChar, delay);
+  }
+
+  writeNextChar();
 }
 
 function revealLoveMessage() {
@@ -136,7 +166,7 @@ function revealLoveMessage() {
 function toggleSurprise() {
   surpriseMessage.classList.toggle("hidden");
   if (surpriseMessage.classList.contains("hidden")) {
-    surpriseBtn.textContent = "Open this 🥺";
+    surpriseBtn.textContent = "Open this 💌";
   } else {
     surpriseBtn.textContent = "You opened it 😍";
   }
@@ -158,6 +188,7 @@ async function toggleMusic() {
       return;
     }
 
+    bgMusic.muted = false;
     await bgMusic.play();
     isMusicPlaying = true;
     syncMusicButtonUI();
@@ -209,6 +240,118 @@ function initParticles() {
   motionProfile = getMotionProfile();
   setInterval(spawnHeart, motionProfile.heartInterval);
   setInterval(spawnSparkle, motionProfile.sparkleInterval);
+}
+
+function spawnLoveWhisper() {
+  const whisper = document.createElement("span");
+  whisper.className = "love-whisper";
+  whisper.textContent = whisperLines[Math.floor(Math.random() * whisperLines.length)];
+
+  const left = 6 + Math.random() * 84;
+  const duration = 6800 + Math.random() * 4400;
+  const size = 14 + Math.random() * 14;
+
+  whisper.style.left = `${left}vw`;
+  whisper.style.bottom = `${6 + Math.random() * 14}vh`;
+  whisper.style.fontSize = `${size}px`;
+  whisper.style.animationDuration = `${duration}ms`;
+
+  loveWhisperContainer.appendChild(whisper);
+  setTimeout(() => whisper.remove(), duration);
+}
+
+function initLoveWhispers() {
+  const interval = motionProfile && motionProfile.heartInterval > 900 ? 12000 : 8400;
+  setInterval(spawnLoveWhisper, interval);
+}
+
+function spawnClickHeartBurst(x, y) {
+  const hearts = ["💖", "💗", "💕", "✨"];
+  for (let i = 0; i < 6; i += 1) {
+    const heart = document.createElement("span");
+    heart.className = "click-heart";
+    heart.textContent = hearts[Math.floor(Math.random() * hearts.length)];
+
+    const offsetX = (Math.random() - 0.5) * 70;
+    const offsetY = (Math.random() - 0.5) * 35;
+    heart.style.left = `${x + offsetX}px`;
+    heart.style.top = `${y + offsetY}px`;
+    heart.style.fontSize = `${12 + Math.random() * 14}px`;
+    heart.style.animationDelay = `${Math.random() * 100}ms`;
+
+    document.body.appendChild(heart);
+    setTimeout(() => heart.remove(), 1000);
+  }
+}
+
+function initHeartBurstClicks() {
+  document.addEventListener("pointerdown", (event) => {
+    // Ignore right click and multi-touch secondary pointers.
+    if (event.button && event.button !== 0) {
+      return;
+    }
+
+    spawnClickHeartBurst(event.clientX, event.clientY);
+  });
+}
+
+function initParallax() {
+  if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+    return;
+  }
+
+  document.addEventListener("pointermove", (event) => {
+    const xRatio = (event.clientX / window.innerWidth - 0.5) * 2;
+    const yRatio = (event.clientY / window.innerHeight - 0.5) * 2;
+    const x = (xRatio * 7).toFixed(2);
+    const y = (yRatio * 7).toFixed(2);
+    document.body.style.setProperty("--parallax-x", `${x}px`);
+    document.body.style.setProperty("--parallax-y", `${y}px`);
+  });
+}
+
+function spawnMomentHeart() {
+  if (loveMomentOverlay.classList.contains("hidden")) {
+    return;
+  }
+
+  const heart = document.createElement("span");
+  heart.className = "moment-heart";
+  heart.textContent = Math.random() > 0.2 ? "💗" : "✨";
+  heart.style.left = `${4 + Math.random() * 92}vw`;
+  heart.style.bottom = "-30px";
+  const duration = 6500 + Math.random() * 3500;
+  heart.style.animationDuration = `${duration}ms`;
+  heart.style.fontSize = `${16 + Math.random() * 24}px`;
+  loveMomentOverlay.appendChild(heart);
+  setTimeout(() => heart.remove(), duration);
+}
+
+function openLoveMoment() {
+  loveMomentOverlay.classList.remove("hidden");
+  overlayHeartTimer = setInterval(spawnMomentHeart, 420);
+}
+
+function closeLoveMoment() {
+  loveMomentOverlay.classList.add("hidden");
+  if (overlayHeartTimer) {
+    clearInterval(overlayHeartTimer);
+    overlayHeartTimer = null;
+  }
+}
+
+function createEmojiFavicon(emoji) {
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><text y="50" x="50%" text-anchor="middle" font-size="50">${emoji}</text></svg>`;
+  return `data:image/svg+xml,${encodeURIComponent(svg)}`;
+}
+
+function initAnimatedFavicon() {
+  const icons = [createEmojiFavicon("💗"), createEmojiFavicon("✨")];
+  let index = 0;
+  setInterval(() => {
+    index = (index + 1) % icons.length;
+    faviconEl.href = icons[index];
+  }, 1000);
 }
 
 function initScrollReveal() {
@@ -266,15 +409,27 @@ function initEvents() {
   revealBtn.addEventListener("click", revealLoveMessage);
   surpriseBtn.addEventListener("click", toggleSurprise);
   musicToggle.addEventListener("click", toggleMusic);
+  missMeBtn.addEventListener("click", openLoveMoment);
+  closeLoveMomentBtn.addEventListener("click", closeLoveMoment);
+  loveMomentOverlay.addEventListener("click", (event) => {
+    if (event.target === loveMomentOverlay) {
+      closeLoveMoment();
+    }
+  });
 }
 
 function init() {
+  bgMusic.muted = true;
   updateLoveCounter();
   syncMusicButtonUI();
   initEvents();
   initScrollReveal();
   initParticles();
+  initLoveWhispers();
   initCursorSparkles();
+  initHeartBurstClicks();
+  initParallax();
+  initAnimatedFavicon();
 }
 
 init();

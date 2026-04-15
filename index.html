@@ -11,13 +11,14 @@
     href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Pacifico&family=Poppins:wght@300;400;500;600;700&display=swap"
     rel="stylesheet"
   />
-  <link rel="icon" type="image/png" href="heart.png" />
+  <link id="dynamicFavicon" rel="icon" type="image/png" href="heart.png" />
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
   <div class="bg-glow"></div>
   <div id="heartContainer" aria-hidden="true"></div>
   <div id="sparkleContainer" aria-hidden="true"></div>
+  <div id="loveWhisperContainer" aria-hidden="true"></div>
 
   <button id="musicToggle" class="music-toggle" aria-label="Toggle background music" title="Toggle background music">
     🎵
@@ -28,7 +29,7 @@
       <p class="tag">for the prettiest soul i know ✨</p>
       <h1 class="hero-title heartbeat">Hi Love 💖</h1>
       <p class="hero-subtitle">I made this just for you...</p>
-      <button id="revealBtn" class="btn btn-primary">Click me 💖</button>
+      <button id="revealBtn" class="btn btn-primary heartbeat-soft">Click me baby 🥺💖</button>
       <p class="floating-love-note">I love you more than words can explain 💖</p>
     </section>
 
@@ -68,13 +69,22 @@
 
     <section class="section card-glass" id="surpriseSection">
       <h2 class="section-title">Tiny Dangerous Corner 😳</h2>
-      <button id="surpriseBtn" class="btn btn-secondary">Open this 🥺</button>
+      <button id="surpriseBtn" class="btn btn-secondary heartbeat-soft">Open this 💌</button>
       <p id="surpriseMessage" class="surprise-message hidden">I love you more than anything in this world 💖</p>
+      <button id="missMeBtn" class="btn btn-primary miss-me-btn">Tap this when you miss me 💗</button>
     </section>
   </main>
 
+  <div id="loveMomentOverlay" class="love-moment-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="loveMomentTitle">
+    <div class="love-moment-card card-glass">
+      <h2 id="loveMomentTitle" class="section-title heartbeat">For You 💗</h2>
+      <p class="love-moment-message">No matter where you are... I’m always right here loving you 💖</p>
+      <button id="closeLoveMomentBtn" class="btn btn-secondary">Hold me close 🤍</button>
+    </div>
+  </div>
+
   <footer class="footer">
-    Made with love by Janus, the pixelated lover 💖
+    Forever yours 💗
   </footer>
 
   <audio id="bgMusic" loop preload="none">
