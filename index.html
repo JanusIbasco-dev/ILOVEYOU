@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="A super cute romantic website made with love." />
+  <title>Hi Love 💖</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Pacifico&family=Poppins:wght@300;400;500;600;700&display=swap"
+    rel="stylesheet"
+  />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="bg-glow"></div>
+  <div id="heartContainer" aria-hidden="true"></div>
+  <div id="sparkleContainer" aria-hidden="true"></div>
+
+  <button id="musicToggle" class="music-toggle" aria-label="Toggle background music" title="Toggle background music">
+    🎵 Music: Off
+  </button>
+
+  <main>
+    <section class="hero section card-glass" id="home">
+      <p class="tag">for the prettiest soul i know ✨</p>
+      <h1 class="hero-title">Hi Love 💖</h1>
+      <p class="hero-subtitle">I made this just for you...</p>
+      <button id="revealBtn" class="btn btn-primary">Click me ❤️</button>
+    </section>
+
+    <section id="loveMessage" class="section hidden card-glass">
+      <h2 class="section-title">A little note from my heart 💌</h2>
+      <p id="typedMessage" class="typed-message" aria-live="polite"></p>
+    </section>
+
+    <section class="section" id="reasons">
+      <h2 class="section-title">Reasons Why I Love You 🌸</h2>
+      <div class="reasons-grid">
+        <article class="reason-card">Your smile makes my day brighter ☀️</article>
+        <article class="reason-card">You make everything feel better 💕</article>
+        <article class="reason-card">You understand my silence and my laughter 🌷</article>
+        <article class="reason-card">Your kindness is the softest magic in my life ✨</article>
+        <article class="reason-card">You turn ordinary moments into beautiful memories 📸</article>
+        <article class="reason-card">Your hugs feel like home to my heart 🏡</article>
+        <article class="reason-card">You inspire me to be a better person every day 🌈</article>
+        <article class="reason-card">Loving you feels like the sweetest forever 💞</article>
+      </div>
+    </section>
+
+    <section class="section" id="gallery">
+      <h2 class="section-title">Our Cute Little Gallery 🖼️</h2>
+      <div class="gallery-grid">
+        <figure class="gallery-item"><img src="https://placehold.co/600x400/FDE2E4/5E548E?text=Our+Memory+1" alt="Placeholder memory 1" /></figure>
+        <figure class="gallery-item"><img src="https://placehold.co/600x400/E2D7FF/5E548E?text=Our+Memory+2" alt="Placeholder memory 2" /></figure>
+        <figure class="gallery-item"><img src="https://placehold.co/600x400/FFF1E6/5E548E?text=Our+Memory+3" alt="Placeholder memory 3" /></figure>
+        <figure class="gallery-item"><img src="https://placehold.co/600x400/FEEAFA/5E548E?text=Our+Memory+4" alt="Placeholder memory 4" /></figure>
+      </div>
+    </section>
+
+    <section class="section card-glass" id="counter">
+      <h2 class="section-title">Days since I fell in love with you 🗓️💖</h2>
+      <p class="counter-value"><span id="daysCount">0</span> days of loving you</p>
+      <p class="counter-note">And I would choose you in every lifetime.</p>
+    </section>
+
+    <section class="section card-glass" id="surpriseSection">
+      <h2 class="section-title">Tiny Dangerous Corner 😳</h2>
+      <button id="surpriseBtn" class="btn btn-secondary">Don't click this 😳</button>
+      <p id="surpriseMessage" class="surprise-message hidden">I love you more than anything in this world 💖</p>
+    </section>
+  </main>
+
+  <footer class="footer">
+    Made with love by Janus, the pixelated lover 💖
+  </footer>
+
+  <audio id="bgMusic" loop preload="none">
+    <source src="https://cdn.pixabay.com/audio/2022/03/15/audio_5ee5bd5d69.mp3" type="audio/mpeg" />
+  </audio>
+
+  <script src="script.js"></script>
+</body>
+</html>
+
