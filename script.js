@@ -9,10 +9,6 @@ const bgMusic = document.getElementById("bgMusic");
 const heartContainer = document.getElementById("heartContainer");
 const sparkleContainer = document.getElementById("sparkleContainer");
 const loveWhisperContainer = document.getElementById("loveWhisperContainer");
-const missMeBtn = document.getElementById("missMeBtn");
-const closeLoveMomentBtn = document.getElementById("closeLoveMomentBtn");
-const loveMomentOverlay = document.getElementById("loveMomentOverlay");
-const hugMessage = document.getElementById("hugMessage");
 const faviconEl = document.getElementById("dynamicFavicon");
 const dailySurprise = document.getElementById("dailySurprise");
 const letterButtons = document.querySelectorAll(".letter-btn");
@@ -88,8 +84,6 @@ let typingStarted = false;
 let isMusicPlaying = false;
 let sectionObserver = null;
 let motionProfile = null;
-let overlayHeartTimer = null;
-let hugCloseTimer = null;
 let particleTimer = null;
 let sparkleTimer = null;
 let currentParticleMode = "hearts";
@@ -412,110 +406,6 @@ function initParallax() {
   });
 }
 
-function spawnMomentHeart() {
-  if (!loveMomentOverlay || loveMomentOverlay.classList.contains("hidden")) {
-    return;
-  }
-
-  const heart = document.createElement("span");
-  heart.className = "moment-heart";
-  heart.textContent = Math.random() > 0.2 ? "💗" : "✨";
-  heart.style.left = `${4 + Math.random() * 92}vw`;
-  heart.style.bottom = "-30px";
-
-  const duration = 6500 + Math.random() * 3500;
-  heart.style.animationDuration = `${duration}ms`;
-  heart.style.fontSize = `${16 + Math.random() * 24}px`;
-
-  loveMomentOverlay.appendChild(heart);
-  setTimeout(() => heart.remove(), duration);
-}
-
-function openLoveMoment() {
-  if (!loveMomentOverlay) {
-    return;
-  }
-
-  loveMomentOverlay.classList.remove("hidden");
-  if (hugMessage) {
-    hugMessage.classList.add("hidden");
-  }
-
-  if (closeLoveMomentBtn) {
-    closeLoveMomentBtn.disabled = false;
-    closeLoveMomentBtn.textContent = "Hold me close 🤍";
-  }
-
-  if (overlayHeartTimer) {
-    clearInterval(overlayHeartTimer);
-  }
-  overlayHeartTimer = setInterval(spawnMomentHeart, 420);
-}
-
-function closeLoveMoment() {
-  if (!loveMomentOverlay) {
-    return;
-  }
-
-  loveMomentOverlay.classList.add("hidden");
-  if (overlayHeartTimer) {
-    clearInterval(overlayHeartTimer);
-    overlayHeartTimer = null;
-  }
-
-  if (hugCloseTimer) {
-    clearTimeout(hugCloseTimer);
-    hugCloseTimer = null;
-  }
-
-  if (hugMessage) {
-    hugMessage.classList.add("hidden");
-  }
-
-  if (closeLoveMomentBtn) {
-    closeLoveMomentBtn.disabled = false;
-    closeLoveMomentBtn.textContent = "Hold me close 🤍";
-  }
-}
-
-function boostHeartsForHug() {
-  let count = 0;
-  const booster = setInterval(() => {
-    spawnFloatingParticle();
-    count += 1;
-    if (count > 16) {
-      clearInterval(booster);
-    }
-  }, 120);
-}
-
-function triggerVirtualHug() {
-  if (!loveMomentOverlay || loveMomentOverlay.classList.contains("hidden")) {
-    return;
-  }
-
-  if (hugMessage) {
-    hugMessage.classList.remove("hidden");
-  }
-
-  if (closeLoveMomentBtn) {
-    closeLoveMomentBtn.disabled = true;
-    closeLoveMomentBtn.textContent = "Holding you tight 🤍";
-  }
-
-  document.body.classList.add("virtual-hug-active");
-  setTimeout(() => document.body.classList.remove("virtual-hug-active"), 900);
-  boostHeartsForHug();
-
-  if (hugCloseTimer) {
-    clearTimeout(hugCloseTimer);
-  }
-
-  hugCloseTimer = setTimeout(() => {
-    closeLoveMoment();
-  }, 1500);
-}
-
 function createEmojiFavicon(emoji) {
   const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><text y="50" x="50%" text-anchor="middle" font-size="50">${emoji}</text></svg>`;
   return `data:image/svg+xml,${encodeURIComponent(svg)}`;
@@ -731,23 +621,11 @@ function initEvents() {
   safeAddListener(revealBtn, "click", revealLoveMessage);
   safeAddListener(surpriseBtn, "click", toggleSurprise);
   safeAddListener(musicToggle, "click", toggleMusic);
-  safeAddListener(missMeBtn, "click", openLoveMoment);
-  safeAddListener(closeLoveMomentBtn, "click", (event) => {
-    event.preventDefault();
-    triggerVirtualHug();
-  });
-
-  safeAddListener(loveMomentOverlay, "click", (event) => {
-    if (event.target === loveMomentOverlay) {
-      closeLoveMoment();
-    }
-  });
 
   // Escape key closes overlays softly.
   document.addEventListener("keydown", (event) => {
     if (event.key === "Escape") {
       closeLettersModal();
-      closeLoveMoment();
     }
   });
 }
