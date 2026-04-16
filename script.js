@@ -11,10 +11,6 @@ const sparkleContainer = document.getElementById("sparkleContainer");
 const loveWhisperContainer = document.getElementById("loveWhisperContainer");
 const faviconEl = document.getElementById("dynamicFavicon");
 const dailySurprise = document.getElementById("dailySurprise");
-const letterButtons = document.querySelectorAll(".letter-btn");
-const lettersModal = document.getElementById("lettersModal");
-const lettersModalText = document.getElementById("lettersModalText");
-const lettersCloseBtn = document.getElementById("lettersCloseBtn");
 const universeStars = document.getElementById("universeStars");
 const universeMessage = document.getElementById("universeMessage");
 const heartScore = document.getElementById("heartScore");
@@ -36,27 +32,6 @@ I love your smile, your heart, your dreams, and everything that makes you... you
 No matter where life takes us, my heart will always find its way back to yours.
 
 Forever yours. 💖`;
-
-const letterMessages = {
-  sad: `Hey love,
-
-If today feels heavy, come here for a second and breathe with me.
-You are never alone in your pain, and I will always stay by your side.
-
-You are strong, precious, and deeply loved. 🤍`,
-  miss: `Hi baby,
-
-If you miss me, close your eyes and imagine my arms around you.
-Every heartbeat of mine says your name with so much love.
-
-Distance can never make me love you less. 💖`,
-  sleep: `My love,
-
-When night feels long, let this be your soft little lullaby.
-You are safe, you are cherished, and tomorrow is another day for us.
-
-Sleep peacefully, my favorite person. 🌙`
-};
 
 const universeMemories = [
   "Remember our first long conversation? I still replay it with a smile.",
@@ -492,35 +467,6 @@ function showDailySurprise() {
   setTimeout(() => dailySurprise.classList.add("hidden"), 6500);
 }
 
-function openLetter(type) {
-  const message = letterMessages[type];
-  if (!message || !lettersModal || !lettersModalText) {
-    return;
-  }
-
-  lettersModal.classList.remove("hidden");
-  typeWriter(message, lettersModalText, 24);
-}
-
-function closeLettersModal() {
-  if (lettersModal) {
-    lettersModal.classList.add("hidden");
-  }
-}
-
-function initOpenWhenLetters() {
-  letterButtons.forEach((button) => {
-    safeAddListener(button, "click", () => openLetter(button.dataset.letter));
-  });
-
-  safeAddListener(lettersCloseBtn, "click", closeLettersModal);
-  safeAddListener(lettersModal, "click", (event) => {
-    if (event.target === lettersModal) {
-      closeLettersModal();
-    }
-  });
-}
-
 function initUniverseStars() {
   if (!universeStars || !universeMessage) {
     return;
@@ -621,13 +567,6 @@ function initEvents() {
   safeAddListener(revealBtn, "click", revealLoveMessage);
   safeAddListener(surpriseBtn, "click", toggleSurprise);
   safeAddListener(musicToggle, "click", toggleMusic);
-
-  // Escape key closes overlays softly.
-  document.addEventListener("keydown", (event) => {
-    if (event.key === "Escape") {
-      closeLettersModal();
-    }
-  });
 }
 
 function init() {
@@ -645,7 +584,6 @@ function init() {
   initHeartBurstClicks();
   initParallax();
   initAnimatedFavicon();
-  initOpenWhenLetters();
   initUniverseStars();
   initHeartCollector();
   initParticleModeToggle();

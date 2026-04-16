@@ -395,43 +395,6 @@ main {
   animation: popIn 500ms ease forwards;
 }
 
-.letters-modal {
-  position: fixed;
-  inset: 0;
-  z-index: 28;
-  display: grid;
-  place-items: center;
-  background: rgba(76, 45, 94, 0.38);
-  backdrop-filter: blur(4px);
-  -webkit-backdrop-filter: blur(4px);
-}
-
-.letters-modal-card {
-  width: min(640px, 92vw);
-  text-align: center;
-}
-
-.letters-modal-text {
-  min-height: 130px;
-  line-height: 1.8;
-  white-space: pre-wrap;
-  margin: 0.8rem 0 1rem;
-}
-
-.letters-modal-text.typing::after {
-  content: "|";
-  color: #d45e9f;
-  margin-left: 2px;
-  animation: cursorBlink 850ms steps(1) infinite;
-}
-
-.open-when-grid {
-  margin-top: 1rem;
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 0.8rem;
-}
-
 .universe-section {
   border-radius: 28px;
   padding: 1.4rem;
@@ -977,9 +940,6 @@ main {
     top: 8px;
   }
 
-  .open-when-grid {
-    grid-template-columns: 1fr;
-  }
 
   .mode-btn {
     min-height: 44px;
